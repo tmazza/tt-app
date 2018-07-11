@@ -2,20 +2,21 @@ export default {
     namespaced: true,
 
     state: {
-        //
-    },
-
-    getters: {
-        //
+        page: 1,
+        shows: []
     },
 
     mutations: {
-        //
+        addShows (state, payload) {
+            state.page += 1
+            state.shows = state.shows.concat(payload.results)
+        }
     },
 
     actions: {
-        getShows ({ commit }, payload) {
-            //
+        get ({ commit, state }) {
+            this._vm.$tmdb.get('popular', { page: state.page })
+                .then(response => commit('addShows', response.data))
         }
     }
 }
