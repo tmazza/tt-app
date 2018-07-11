@@ -2,16 +2,16 @@
     <div>
         <h1>Login</h1>
 
-        <form @submit.prevent="login(formData)">
+        <form @submit.prevent="login">
             <label for="email">Email:</label>
-            <input type="text" name="email" v-model="formData.email">
-            <FormErrors :errors="formErrors.email"/>
+            <input type="text" name="email" v-model="form.data.email">
+            <FormErrors :errors="form.errors.email"/>
 
             <label for="password">Password:</label>
-            <input type="password" name="password" v-model="formData.password">
-            <FormErrors :errors="formErrors.password"/>
+            <input type="password" name="password" v-model="form.data.password">
+            <FormErrors :errors="form.errors.password"/>
 
-            <FormErrors :errors="formErrors.non_field_errors"/>
+            <FormErrors :errors="form.errors.non_field_errors"/>
 
             <button type="submit">Login</button>
         </form>
@@ -28,20 +28,17 @@ export default {
 
     data () {
         return {
-            formData: {
-                email: '',
-                password: ''
-            },
-
-            formErrors: {}
+            form: {
+                data: {},
+                errors: {}
+            }
         }
     },
 
     methods: {
-        login (formData) {
-            this.$store.dispatch('auth/login', formData)
-                .then(() => this.$router.push({name: 'showsMine'}))
-                .catch(error => { this.formErrors = error.response.data })
+        login () {
+            this.$form.submit('auth/login', this.form)
+                .then(() => { this.$router.push({name: 'showsMine'}) })
         }
     }
 }

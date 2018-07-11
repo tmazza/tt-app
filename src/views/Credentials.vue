@@ -2,34 +2,34 @@
     <div>
         <h1>Credentials</h1>
 
-        <form @submit.prevent="saveEmail(emailFormData)">
+        <form @submit.prevent="saveEmail">
             <label for="email">New email:</label>
-            <input type="text" name="email" v-model="emailFormData.email">
-            <FormErrors :errors="emailFormErrors.email"/>
+            <input type="text" name="email" v-model="emailForm.data.email">
+            <FormErrors :errors="emailForm.errors.email"/>
 
             <label for="current_password">Current password:</label>
-            <input type="password" name="current_password" v-model="emailFormData.current_password">
-            <FormErrors :errors="emailFormErrors.current_password"/>
+            <input type="password" name="current_password" v-model="emailForm.data.current_password">
+            <FormErrors :errors="emailForm.errors.current_password"/>
 
-            <FormErrors :errors="emailFormErrors.non_field_errors"/>
+            <FormErrors :errors="emailForm.errors.non_field_errors"/>
 
             <button type="submit">Save</button>
         </form>
 
-        <form @submit.prevent="savePassword(passwordFormData)">
+        <form @submit.prevent="savePassword">
             <label for="password">New password:</label>
-            <input type="password" name="password" v-model="passwordFormData.password">
-            <FormErrors :errors="passwordFormErrors.password"/>
+            <input type="password" name="password" v-model="passwordForm.data.password">
+            <FormErrors :errors="passwordForm.errors.password"/>
 
             <label for="password_confirm">Confirm new password:</label>
-            <input type="password" name="password_confirm" v-model="passwordFormData.password_confirm">
-            <FormErrors :errors="passwordFormErrors.password_confirm"/>
+            <input type="password" name="password_confirm" v-model="passwordForm.data.password_confirm">
+            <FormErrors :errors="passwordForm.errors.password_confirm"/>
 
             <label for="current_password">Current password:</label>
-            <input type="password" name="current_password" v-model="passwordFormData.current_password">
-            <FormErrors :errors="passwordFormErrors.current_password"/>
+            <input type="password" name="current_password" v-model="passwordForm.data.current_password">
+            <FormErrors :errors="passwordForm.errors.current_password"/>
 
-            <FormErrors :errors="passwordFormErrors.non_field_errors"/>
+            <FormErrors :errors="passwordForm.errors.non_field_errors"/>
 
             <button type="submit">Save</button>
         </form>
@@ -46,30 +46,25 @@ export default {
 
     data () {
         return {
-            emailFormData: {},
-            emailFormErrors: {},
-            passwordFormData: {},
-            passwordFormErrors: {}
+            emailForm: {
+                data: {},
+                errors: {}
+            },
+
+            passwordForm: {
+                data: {},
+                errors: {}
+            }
         }
     },
 
     methods: {
-        saveEmail (formData) {
-            this.$store.dispatch('credentials/updateEmail', formData)
-                .then(() => {
-                    this.emailFormData = {}
-                    this.emailFormErrors = {}
-                })
-                .catch(error => { this.emailFormErrors = error.response.data })
+        saveEmail () {
+            this.$form.submit('credentials/updateEmail', this.emailForm)
         },
 
-        savePassword (formData) {
-            this.$store.dispatch('credentials/updatePassword', formData)
-                .then(() => {
-                    this.passwordFormData = {}
-                    this.passwordFormErrors = {}
-                })
-                .catch(error => { this.passwordFormErrors = error.response.data })
+        savePassword () {
+            this.$form.submit('credentials/updatePassword', this.passwordForm)
         }
     }
 }
