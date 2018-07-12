@@ -2,15 +2,18 @@
     <div>
         <h2>Popular Shows</h2>
 
-        <p v-for="show in shows" :key="show.id">
-            ID: {{ show.id }}<br>
-            Name: {{ show.original_name }}
-        </p>
+        <PosterCardList :shows="shows"/>
     </div>
 </template>
 
 <script>
+import PosterCardList from '@/components/PosterCardList'
+
 export default {
+    components: {
+        PosterCardList
+    },
+
     computed: {
         shows () {
             return this.$store.state.showsPopular.shows

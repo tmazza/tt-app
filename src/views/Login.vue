@@ -38,7 +38,7 @@ export default {
     methods: {
         login () {
             this.$form.submit('auth/login', this.form)
-                .then(() => { this.$router.push({name: 'showsMine'}) })
+                .then(() => { this.$router.push({ name: 'showsMine' }) })
         }
     }
 }

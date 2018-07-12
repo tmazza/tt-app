@@ -5,6 +5,7 @@ import Home from '@/views/Home.vue'
 import Signup from '@/views/Signup.vue'
 import Login from '@/views/Login.vue'
 import Credentials from '@/views/Credentials.vue'
+import ShowDetail from '@/views/ShowDetail.vue'
 import Shows from '@/views/Shows.vue'
 import ShowsMine from '@/views/ShowsMine.vue'
 import ShowsPopular from '@/views/ShowsPopular.vue'
@@ -15,6 +16,7 @@ Vue.use(Router)
 
 const authRequired = [
     'credentials',
+    'showDetail',
     'showsMine',
     'showsPopular'
 ]
@@ -41,6 +43,11 @@ const router = new Router({
             path: '/credentials',
             name: 'credentials',
             component: Credentials
+        },
+        {
+            path: '/show/:id',
+            name: 'showDetail',
+            component: ShowDetail
         },
         {
             path: '/shows/',

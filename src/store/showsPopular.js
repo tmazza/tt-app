@@ -15,7 +15,7 @@ export default {
 
     actions: {
         get ({ commit, state }) {
-            this._vm.$tmdb.get('popular', { page: state.page })
+            this._vm.$tmdb.getPopular(state.page)
                 .then(response => commit('addShows', response.data))
         }
     }
