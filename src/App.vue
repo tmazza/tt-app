@@ -11,6 +11,16 @@ import Header from '@/components/Header'
 export default {
     components: {
         Header
+    },
+
+    mounted () {
+        this.getProgresses()
+    },
+
+    methods: {
+        getProgresses () {
+            this.$store.dispatch('shows/getProgresses')
+        }
     }
 }
 </script>

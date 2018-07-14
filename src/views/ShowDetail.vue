@@ -1,24 +1,72 @@
 <template>
     <div id="show-detail-container">
         <div id="poster-container">
-            <img :src="show.posterUrl">
+            <img :src="posterUrl">
         </div>
 
         <div>
-            <h2>{{ show.original_name }}</h2>
-            <p>{{ show.overview }}</p>
-            <div v-for="season in show.seasons" :key="season.id">
-                {{ season }}
-            </div>
+            <h2>{{ name }}</h2>
+
+            <h4>Overview</h4>
+            <p>{{ overview }}</p>
+
+            <button v-if="!progress" @click="createProgress">Add</button>
+            <button v-if="progress" @click="deleteProgress">Remove</button>
+
+            <EpisodeSelector :show-id="showId"
+                             :seasons="seasons"
+                             :current-season="currentSeason"
+                             :current-episode="currentEpisode"
+                             :disabled="progress === undefined"/>
         </div>
     </div>
 </template>
 
 <script>
+import EpisodeSelector from '@/components/EpisodeSelector'
+
 export default {
+    components: {
+        EpisodeSelector
+    },
+
+    data () {
+        return {
+            showId: Number(this.$route.params.id),
+            show: {}
+        }
+    },
+
     computed: {
-        show () {
-            return this.$store.state.showDetail.show
+        name () {
+            return this.show.original_name
+        },
+
+        posterUrl () {
+            return this.$tmdb.posterUrl(this.show.poster_path, 4)
+        },
+
+        overview () {
+            return this.show.overview
+        },
+
+        seasons () {
+            if (this.show.seasons) {
+                return this.$tmdb.seasons(this.show)
+            }
+            return []
+        },
+
+        progress () {
+            return this.$store.getters['shows/progress'](this.showId)
+        },
+
+        currentSeason () {
+            return this.progress ? this.progress.current_season : 0
+        },
+
+        currentEpisode () {
+            return this.progress ? this.progress.current_episode : 0
         }
     },
 
@@ -26,17 +74,24 @@ export default {
         this.getData()
     },
 
-    destroyed () {
-        this.clear()
-    },
-
     methods: {
         getData () {
-            this.$store.dispatch('showDetail/get', { id: this.$route.params.id })
+            this.$tmdb.getShow(this.showId).then(response => { this.show = response.data })
         },
 
-        clear () {
-            this.$store.dispatch('showDetail/clear')
+        createProgress () {
+            this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
+                this.$store.dispatch('shows/createProgress', {
+                    show_id: this.showId,
+                    show_name: this.name,
+                    show_poster_path: this.show.poster_path,
+                    next_air_date: response.data.air_date
+                })
+            })
+        },
+
+        deleteProgress () {
+            this.$store.dispatch('shows/deleteProgress', { id: this.showId })
         }
     }
 }

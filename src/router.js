@@ -1,13 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-import Home from '@/views/Home.vue'
 import Signup from '@/views/Signup.vue'
 import Login from '@/views/Login.vue'
 import Credentials from '@/views/Credentials.vue'
+import Progresses from '@/views/Progresses.vue'
 import ShowDetail from '@/views/ShowDetail.vue'
 import Shows from '@/views/Shows.vue'
-import ShowsMine from '@/views/ShowsMine.vue'
 import ShowsPopular from '@/views/ShowsPopular.vue'
 
 import store from '@/store'
@@ -16,9 +15,7 @@ Vue.use(Router)
 
 const authRequired = [
     'credentials',
-    'showDetail',
-    'showsMine',
-    'showsPopular'
+    'progresses'
 ]
 
 const router = new Router({
@@ -27,7 +24,7 @@ const router = new Router({
         {
             path: '/',
             name: 'home',
-            component: Home
+            redirect: { name: 'progresses' }
         },
         {
             path: '/signup',
@@ -45,6 +42,11 @@ const router = new Router({
             component: Credentials
         },
         {
+            path: '/progresses',
+            name: 'progresses',
+            component: Progresses
+        },
+        {
             path: '/show/:id',
             name: 'showDetail',
             component: ShowDetail
@@ -53,11 +55,6 @@ const router = new Router({
             path: '/shows/',
             component: Shows,
             children: [
-                {
-                    path: 'mine',
-                    name: 'showsMine',
-                    component: ShowsMine
-                },
                 {
                     path: 'popular',
                     name: 'showsPopular',
@@ -71,9 +68,9 @@ const router = new Router({
 router.beforeEach((to, from, next) => {
     var isAuthenticated = store.getters['auth/isAuthenticated']
     if (authRequired.includes(to.name) && !isAuthenticated) {
-        next({name: 'login'})
+        next({name: 'showsPopular'})
     } else if (['signup', 'login'].includes(to.name) && isAuthenticated) {
-        next({name: 'showsMine'})
+        next({name: 'progresses'})
     } else {
         next()
     }

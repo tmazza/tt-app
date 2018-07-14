@@ -42,7 +42,7 @@ export default {
     methods: {
         signup () {
             this.$form.submit('auth/signup', this.form)
-                .then(() => { this.$router.push({ name: 'showsMine' }) })
+                .then(() => { this.$router.push({ name: 'progresses' }) })
         }
     }
 }

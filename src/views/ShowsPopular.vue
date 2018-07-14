@@ -3,6 +3,8 @@
         <h2>Popular Shows</h2>
 
         <PosterCardList :shows="shows"/>
+
+        <button @click="getShows">More</button>
     </div>
 </template>
 
@@ -16,19 +18,19 @@ export default {
 
     computed: {
         shows () {
-            return this.$store.state.showsPopular.shows
+            return this.$store.state.shows.populars
         }
     },
 
     mounted () {
-        if (this.$store.state.showsPopular.page === 1) {
-            this.getData()
+        if (this.$store.state.shows.popularsNextPage === 1) {
+            this.getShows()
         }
     },
 
     methods: {
-        getData () {
-            this.$store.dispatch('showsPopular/get')
+        getShows () {
+            this.$store.dispatch('shows/getPopulars')
         }
     }
 }

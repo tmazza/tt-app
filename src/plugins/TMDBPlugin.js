@@ -27,7 +27,7 @@ export default {
                 return axios.get(url, { params: queryParams })
             },
 
-            getPopular (page) {
+            getPopulars (page) {
                 return this.get(this.urls['popular'], { page: page })
             },
 
@@ -47,13 +47,20 @@ export default {
             },
 
             seasons (show) {
-                // Return the actual seasons of the show. The TMDB API may also
-                // return the especial seasons as the first ones in the list.
-                return show.seasons.slice(show.seasons.length - show.number_of_seasons)
+                // Retrieve only the actual seasons of the show. The TMDB API
+                // may also return the especial seasons as the first ones in the
+                // list.
+                var seasons = show.seasons.slice(show.seasons.length - show.number_of_seasons)
+
+                // Remove the last season if there is no episode.
+                if (seasons[seasons.length - 1].episode_count === 0) {
+                    seasons = seasons.slice(0, seasons.length - 1)
+                }
+
+                return seasons
             },
 
-            nextEpisode (show, season, episode) {
-                var seasons = this.seasons(show)
+            nextEpisode (seasons, season, episode) {
                 if (season && episode) {
                     if (episode < seasons[season - 1].episode_count) {
                         // Not the last episode in season.
@@ -62,21 +69,11 @@ export default {
                         // Not the last season.
                         return { season: season + 1, episode: 1 }
                     } else {
-                        return null
+                        return { season: null, episode: null }
                     }
                 } else {
                     return { season: 1, episode: 1 }
                 }
-            },
-
-            episodeIsAvailable (showId, season, episode) {
-                this.getEpisode(showId, season, episode)
-                    .then(response => {
-                        console.log(response.data)
-                    })
-                    .catch(error => {
-                        console.log(error.response.data)
-                    })
             }
         }
     }

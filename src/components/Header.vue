@@ -1,20 +1,23 @@
 <template>
     <div>
-        <router-link to="/">Home</router-link> |
-        <router-link to="/shows/mine">My Shows</router-link> |
+        <router-link v-if="isAuthenticated" to="/progresses">My Progresses</router-link> |
         <router-link to="/shows/popular">Popular Shows</router-link> |
-        <router-link to="/signup">Signup</router-link> |
-        <router-link to="/login">Login</router-link> |
-        <router-link to="/credentials">Credentials</router-link> |
-        <a @click="logout">Logout</a> |
+        <router-link v-if="isAuthenticated" to="/credentials">Credentials</router-link> |
+        <a v-if="isAuthenticated" @click="logout">Logout</a> |
+        <strong v-if="isAuthenticated">{{ email }}</strong>
 
-        <strong>{{ email }}</strong>
+        <router-link v-if="!isAuthenticated" to="/signup">Signup</router-link> |
+        <router-link v-if="!isAuthenticated" to="/login">Login</router-link>
     </div>
 </template>
 
 <script>
 export default {
     computed: {
+        isAuthenticated () {
+            return this.$store.getters['auth/isAuthenticated']
+        },
+
         email () {
             var credentials = this.$store.getters['auth/credentials']
             if (credentials) {
@@ -27,7 +30,7 @@ export default {
     methods: {
         logout () {
             this.$store.dispatch('auth/logout')
-            this.$router.push({ name: 'home' })
+            this.$router.push({ name: 'login' })
         }
     }
 }

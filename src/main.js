@@ -6,13 +6,13 @@ import store from '@/store'
 
 import APIPlugin from '@/plugins/APIPlugin'
 import FormPlugin from '@/plugins/FormPlugin'
-import TMDBPlugin from '@/plugins/TMDBPlugin'
+import TMDbPlugin from '@/plugins/TMDbPlugin'
 
 Vue.config.productionTip = false
 
 Vue.use(APIPlugin)
 Vue.use(FormPlugin)
-Vue.use(TMDBPlugin)
+Vue.use(TMDbPlugin)
 
 new Vue({
     router,
