@@ -45,7 +45,10 @@ export default {
     methods: {
         signup () {
             this.$form.submit('auth/signup', this.form)
-                .then(() => { this.$router.push({ name: 'progresses' }) })
+                .then(() => {
+                    var to = this.$route.query.next || { name: 'showsPopular' }
+                    this.$router.push(to)
+                })
         }
     }
 }

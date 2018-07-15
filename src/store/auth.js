@@ -45,8 +45,9 @@ export default {
                 .then(response => commit('updateToken', response.data))
         },
 
-        logout ({ commit }) {
+        logout ({ commit, dispatch }) {
             commit('removeToken')
+            dispatch('shows/clear', null, { root: true })
         }
     }
 }

@@ -22,6 +22,10 @@ export default {
 
         setProgresses (state, payload) {
             state.progresses = payload
+        },
+
+        clear (state) {
+            state.progresses = []
         }
     },
 
@@ -64,6 +68,10 @@ export default {
         deleteProgress ({ dispatch }, payload) {
             this._vm.$api.delete('tmdb/progresses/' + payload.id + '/')
                 .then(() => dispatch('getProgresses'))
+        },
+
+        clear ({ commit }) {
+            commit('clear')
         }
     }
 }

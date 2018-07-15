@@ -85,14 +85,18 @@ export default {
         },
 
         createProgress () {
-            this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
-                this.$store.dispatch('shows/createProgress', {
-                    show_id: this.showId,
-                    show_name: this.name,
-                    show_poster_path: this.show.poster_path,
-                    next_air_date: response.data.air_date
+            if (!this.$store.getters['auth/authenticated']) {
+                this.$router.push({ name: 'signup', query: { next: this.$route.path } })
+            } else {
+                this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
+                    this.$store.dispatch('shows/createProgress', {
+                        show_id: this.showId,
+                        show_name: this.name,
+                        show_poster_path: this.show.poster_path,
+                        next_air_date: response.data.air_date
+                    })
                 })
-            })
+            }
         },
 
         deleteProgress () {

@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <img :src="posterUrl">
+        <img :src="posterUrl" @click="open">
         <div class="card-right">
             <h5>{{ progress.show_name }}</h5>
 
@@ -182,6 +182,8 @@ export default {
     border: 1px solid #bbb;
     border-radius: 3px;
 }
+
+.card img { cursor: pointer; }
 
 .card .card-right {
     display: flex;
