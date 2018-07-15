@@ -4,14 +4,19 @@
             <img :src="posterUrl">
         </div>
 
-        <div>
-            <h2>{{ name }}</h2>
+        <div class="right-content">
+            <h3>{{ name }}</h3>
 
-            <h4>Overview</h4>
             <p>{{ overview }}</p>
 
-            <button v-if="!progress" @click="createProgress">Add</button>
-            <button v-if="progress" @click="deleteProgress">Remove</button>
+            <div class="buttons">
+                <button v-if="!progress" class="button-primary" @click="createProgress">
+                    Follow
+                </button>
+                <button v-if="progress" class="button" @click="deleteProgress">
+                    Unfollow
+                </button>
+            </div>
 
             <EpisodeSelector :show-id="showId"
                              :seasons="seasons"
@@ -71,11 +76,11 @@ export default {
     },
 
     mounted () {
-        this.getData()
+        this.getShowDetail()
     },
 
     methods: {
-        getData () {
+        getShowDetail () {
             this.$tmdb.getShow(this.showId).then(response => { this.show = response.data })
         },
 
@@ -104,5 +109,11 @@ export default {
     max-width: 1200px;
 }
 
+#show-detail-container .right-content { padding-left: 32px; }
+
+#show-detail-container .right-content .buttons { margin-bottom: 25px; }
+
 #poster-container { max-width: 342px; }
+
+#poster-container img { border-radius: 3px; }
 </style>

@@ -1,23 +1,26 @@
 <template>
     <div>
-        <h1>Signup</h1>
-
         <form @submit.prevent="signup">
-            <label for="email">Email:</label>
-            <input type="text" name="email" v-model="form.data.email">
-            <FormErrors :errors="form.errors.email"/>
+            <div>
+                <FormErrors :errors="form.errors.non_field_errors"/>
 
-            <label for="password">Password:</label>
-            <input type="password" name="password" v-model="form.data.password">
-            <FormErrors :errors="form.errors.password"/>
+                <label for="email">Email: </label>
+                <input class="u-full-width" type="text" name="email" v-model="form.data.email">
+                <FormErrors :errors="form.errors.email"/>
 
-            <label for="password_confirm">Confirm Password:</label>
-            <input type="password" name="password_confirm" v-model="form.data.password_confirm">
-            <FormErrors :errors="form.errors.password_confirm"/>
+                <label for="password">Password: </label>
+                <input class="u-full-width" type="password" name="password" v-model="form.data.password">
+                <FormErrors :errors="form.errors.password"/>
 
-            <FormErrors :errors="form.errors.non_field_errors"/>
+                <label for="password_confirm">Confirm Password: </label>
+                <input class="u-full-width"
+                       type="password"
+                       name="password_confirm"
+                       v-model="form.data.password_confirm">
+                <FormErrors :errors="form.errors.password_confirm"/>
+            </div>
 
-            <button type="submit">Signup</button>
+            <input class="button-primary" type="submit" value="Signup">
         </form>
     </div>
 </template>

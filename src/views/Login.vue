@@ -1,19 +1,19 @@
 <template>
     <div>
-        <h1>Login</h1>
-
         <form @submit.prevent="login">
-            <label for="email">Email:</label>
-            <input type="text" name="email" v-model="form.data.email">
-            <FormErrors :errors="form.errors.email"/>
+            <div>
+                <FormErrors :errors="form.errors.non_field_errors"/>
 
-            <label for="password">Password:</label>
-            <input type="password" name="password" v-model="form.data.password">
-            <FormErrors :errors="form.errors.password"/>
+                <label for="email">Email:</label>
+                <input class="u-full-width" type="text" name="email" v-model="form.data.email">
+                <FormErrors :errors="form.errors.email"/>
 
-            <FormErrors :errors="form.errors.non_field_errors"/>
+                <label for="password">Password:</label>
+                <input class="u-full-width" type="password" name="password" v-model="form.data.password">
+                <FormErrors :errors="form.errors.password"/>
+            </div>
 
-            <button type="submit">Login</button>
+            <input class="button-primary" type="submit" value="Login">
         </form>
     </div>
 </template>
@@ -38,7 +38,10 @@ export default {
     methods: {
         login () {
             this.$form.submit('auth/login', this.form)
-                .then(() => { this.$router.push({ name: 'progresses' }) })
+                .then(() => {
+                    this.$store.dispatch('shows/getProgresses')
+                    this.$router.push({ name: 'progresses' })
+                })
         }
     }
 }

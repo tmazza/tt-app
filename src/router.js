@@ -66,10 +66,10 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-    var isAuthenticated = store.getters['auth/isAuthenticated']
-    if (authRequired.includes(to.name) && !isAuthenticated) {
+    var authenticated = store.getters['auth/authenticated']
+    if (authRequired.includes(to.name) && !authenticated) {
         next({name: 'showsPopular'})
-    } else if (['signup', 'login'].includes(to.name) && isAuthenticated) {
+    } else if (['signup', 'login'].includes(to.name) && authenticated) {
         next({name: 'progresses'})
     } else {
         next()

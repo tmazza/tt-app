@@ -2,7 +2,7 @@
     <div class="card" @click="open">
         <img :src="posterUrl">
         <div class="content">
-            <span>{{ show.original_name }}</span>
+            {{ show.original_name }}
         </div>
     </div>
 </template>
@@ -32,12 +32,23 @@ export default {
 <style scoped>
 .card {
     width: 185px;
-    margin: 16px 8px;
-    border: 2px solid;
+    margin: 0 8px 32px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
     cursor: pointer;
 }
 
-.content { padding: 2px 16px; }
+.card img {
+    /* Fix width and height because some posters come with slightly bigger height. */
+    width: 185px;
+    height: 278px;
+}
 
-.content span { word-wrap: break-word; }
+.card .content {
+    padding: 0 8px;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
 </style>

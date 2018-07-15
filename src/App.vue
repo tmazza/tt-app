@@ -1,7 +1,9 @@
 <template>
     <div id="app">
-        <Header/>
-        <router-view/>
+        <Header id="header"/>
+        <div id="main-container" class="tt-container">
+            <router-view/>
+        </div>
     </div>
 </template>
 
@@ -14,7 +16,9 @@ export default {
     },
 
     mounted () {
-        this.getProgresses()
+        if (this.$store.getters['auth/authenticated']) {
+            this.getProgresses()
+        }
     },
 
     methods: {
@@ -24,3 +28,26 @@ export default {
     }
 }
 </script>
+
+<style>
+body { margin: 0 8px; }
+
+form {
+    margin: 0 auto;
+    max-width: 400px;
+}
+
+#header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+}
+
+#main-container { padding: 80px 0; }
+
+.tt-container {
+    margin: 0 auto;
+    max-width: 1200px;
+}
+</style>

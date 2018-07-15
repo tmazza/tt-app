@@ -12,7 +12,7 @@ export default {
             return state.token ? jwtDecode(state.token) : null
         },
 
-        isAuthenticated (state, getters) {
+        authenticated (state, getters) {
             if (getters.credentials) {
                 var expires = new Date(getters.credentials.exp * 1000)
                 var now = new Date()

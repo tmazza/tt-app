@@ -1,7 +1,5 @@
 <template>
     <div>
-        <h2>My Progresses</h2>
-
         <div v-for="progress in progresses" :key="progress.id">
             <ProgressCard :progress="progress"/>
         </div>

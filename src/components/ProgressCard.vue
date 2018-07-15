@@ -1,18 +1,41 @@
 <template>
     <div class="card">
         <img :src="posterUrl">
-        <div>
-            {{ progress.show_name }}<br>
-            Current: S{{ progress.current_season }} E{{ progress.current_episode }}<br>
-            <div v-if="progress.next_season && progress.next_episode">
-                Next: S{{ progress.next_season }} E{{ progress.next_episode }}
-                <span v-if="progress.next_air_date">
-                     - {{ progress.next_air_date }}
-                </span>
+        <div class="card-right">
+            <h5>{{ progress.show_name }}</h5>
+
+            <div class="episodes">
+                <div class="episodes-left">
+                    <div v-if="progress.current_season && progress.current_episode">
+                        Current:
+                    </div>
+
+                    <div v-if="progress.next_season && progress.next_episode">
+                        Next:
+                    </div>
+                </div>
+
+                <div class="episodes-right">
+                    <div v-if="progress.current_season && progress.current_episode">
+                        S{{ progress.current_season }} E{{ progress.current_episode }}
+                    </div>
+
+                    <div v-if="progress.next_season && progress.next_episode">
+                        S{{ progress.next_season }} E{{ progress.next_episode }}
+                        <span v-if="progress.next_air_date">
+                             - {{ progress.next_air_date }}
+                        </span>
+                    </div>
+                </div>
             </div>
-            <button @click="remove">Remove</button>
-            <button @click="open">Details</button>
-            <button v-if="available" @click="next">Next</button>
+
+            <div class="card-buttons">
+                <a class="card-button" @click="unfollow">unfollow</a>
+                <div class="card-buttons-right">
+                    <a class="card-button" @click="open">details</a>
+                    <a v-if="available" class="card-button" @click="next">next</a>
+                </div>
+            </div>
         </div>
     </div>
 </template>
@@ -144,7 +167,7 @@ export default {
             this.$router.push({ name: 'showDetail', params: { id: this.progress.show_id } })
         },
 
-        remove () {
+        unfollow () {
             this.$store.dispatch('shows/deleteProgress', { id: this.progress.show_id })
         }
     }
@@ -152,5 +175,48 @@ export default {
 </script>
 
 <style scoped>
-.card { display: flex; }
+.card {
+    display: flex;
+    margin: 0 auto 20px;
+    max-width: 600px;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+}
+
+.card .card-right {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: space-between;
+    padding: 8px 16px;
+}
+
+.card .card-right h5 { margin: 0; }
+
+.card .card-right .episodes { display: flex; }
+
+.card .card-right .episodes .episodes-left { text-align: right; }
+
+.card .card-right .episodes .episodes-right {
+    flex-grow: 1;
+    padding-left: 10px;
+}
+
+.card .card-right .card-buttons { display: flex; }
+
+.card .card-right .card-buttons .card-button {
+    margin: 0 8px;
+    padding: 8px 0;
+    cursor: pointer;
+}
+
+.card .card-right .card-buttons .card-button:first-child { margin-left: 0; }
+
+.card .card-right .card-buttons .card-button:last-child { margin-right: 0; }
+
+.card .card-right .card-buttons .card-buttons-right {
+    display: flex;
+    flex-grow: 1;
+    justify-content: flex-end;
+}
 </style>

@@ -1,10 +1,8 @@
 <template>
     <div>
-        <h2>Popular Shows</h2>
-
         <PosterCardList :shows="shows"/>
 
-        <button @click="getShows">More</button>
+        <button id="more-button" @click="getShows">More</button>
     </div>
 </template>
 
@@ -35,3 +33,10 @@ export default {
     }
 }
 </script>
+
+<style scoped>
+#more-button {
+    display: block;
+    margin: 0 auto;
+}
+</style>

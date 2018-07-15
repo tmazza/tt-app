@@ -1,38 +1,51 @@
 <template>
     <div>
-        <h1>Credentials</h1>
-
         <form @submit.prevent="saveEmail">
-            <label for="email">New email:</label>
-            <input type="text" name="email" v-model="emailForm.data.email">
-            <FormErrors :errors="emailForm.errors.email"/>
+            <div>
+                <FormErrors :errors="emailForm.errors.non_field_errors"/>
 
-            <label for="current_password">Current password:</label>
-            <input type="password" name="current_password" v-model="emailForm.data.current_password">
-            <FormErrors :errors="emailForm.errors.current_password"/>
+                <label for="email">New email:</label>
+                <input class="u-full-width" type="text" name="email" v-model="emailForm.data.email">
+                <FormErrors :errors="emailForm.errors.email"/>
 
-            <FormErrors :errors="emailForm.errors.non_field_errors"/>
+                <label for="current_password">Current password:</label>
+                <input class="u-full-width"
+                       type="password"
+                       name="current_password"
+                       v-model="emailForm.data.current_password">
+                <FormErrors :errors="emailForm.errors.current_password"/>
+            </div>
 
-            <button type="submit">Save</button>
+            <input class="button-primary" type="submit" value="Save">
         </form>
 
         <form @submit.prevent="savePassword">
-            <label for="password">New password:</label>
-            <input type="password" name="password" v-model="passwordForm.data.password">
-            <FormErrors :errors="passwordForm.errors.password"/>
+            <div>
+                <FormErrors :errors="passwordForm.errors.non_field_errors"/>
 
-            <label for="password_confirm">Confirm new password:</label>
-            <input type="password" name="password_confirm" v-model="passwordForm.data.password_confirm">
-            <FormErrors :errors="passwordForm.errors.password_confirm"/>
+                <label for="password">New password:</label>
+                <input class="u-full-width" type="password" name="password" v-model="passwordForm.data.password">
+                <FormErrors :errors="passwordForm.errors.password"/>
 
-            <label for="current_password">Current password:</label>
-            <input type="password" name="current_password" v-model="passwordForm.data.current_password">
-            <FormErrors :errors="passwordForm.errors.current_password"/>
+                <label for="password_confirm">Confirm new password:</label>
+                <input class="u-full-width"
+                       type="password"
+                       name="password_confirm"
+                       v-model="passwordForm.data.password_confirm">
+                <FormErrors :errors="passwordForm.errors.password_confirm"/>
 
-            <FormErrors :errors="passwordForm.errors.non_field_errors"/>
+                <label for="current_password">Current password:</label>
+                <input class="u-full-width"
+                       type="password"
+                       name="current_password"
+                       v-model="passwordForm.data.current_password">
+                <FormErrors :errors="passwordForm.errors.current_password"/>
+            </div>
 
-            <button type="submit">Save</button>
+            <input class="button-primary" type="submit" value="Save">
         </form>
+
+        <button id="logout-button" class="button" @click="logout">Logout</button>
     </div>
 </template>
 
@@ -65,7 +78,21 @@ export default {
 
         savePassword () {
             this.$form.submit('credentials/updatePassword', this.passwordForm)
+        },
+
+        logout () {
+            this.$store.dispatch('auth/logout')
+            this.$router.push({ name: 'showsPopular' })
         }
     }
 }
 </script>
+
+<style scoped>
+form { margin-bottom: 40px; }
+
+#logout-button {
+    display: block;
+    margin: 80px auto 0;
+}
+</style>

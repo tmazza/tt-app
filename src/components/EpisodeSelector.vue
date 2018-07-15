@@ -1,14 +1,22 @@
 <template>
     <div>
-        <div v-for="season in seasons" :key="season.id">
-            Season {{ season.season_number }}:
-            <button v-for="episode in season.episode_count"
-                    :key="episode.id"
-                    :class="{ watched: watched(season.season_number, episode) }"
-                    :disabled="disabled"
-                    @click="select(season.season_number, episode)">
-                {{ episode }}
-            </button>
+        <div v-for="season in seasons" :key="season.id" class="season">
+            <div class="number">
+                S{{ season.season_number }}:
+            </div>
+
+            <div class="episodes">
+                <span v-for="episode in season.episode_count"
+                      class="selector"
+                      :key="episode.id"
+                      :class="{
+                          disabled: disabled,
+                          selected: selected(season.season_number, episode)
+                      }"
+                      @click="select(season.season_number, episode)">
+                    {{ episode }}
+                </span>
+            </div>
         </div>
     </div>
 </template>
@@ -38,12 +46,16 @@ export default {
     },
 
     methods: {
-        watched (season, episode) {
+        selected (season, episode) {
             return (season === this.currentSeason && episode <= this.currentEpisode) ||
                 (season < this.currentSeason)
         },
 
         select (season, episode) {
+            if (this.disabled) {
+                return
+            }
+
             var payload = {
                 id: this.showId,
                 data: {
@@ -94,5 +106,36 @@ export default {
 </script>
 
 <style socped>
-.watched { background-color: green; }
+.season {
+    display: flex;
+    margin-bottom: 6px;
+}
+
+.season .number { flex-basis: 32px; }
+
+.season .episodes {
+    flex-basis: 794px;
+    flex-grow: 1;
+}
+
+.season .episodes .selector {
+    display: inline-block;
+    margin: 0 4px 6px;
+    width: 24px;
+    text-align: center;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.season .episodes .disabled {
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+.season .episodes .selected {
+    color: white;
+    background-color: #33C3F0;
+    border-color: #33C3F0;
+}
 </style>

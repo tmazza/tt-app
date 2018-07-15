@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="poster-card-list">
         <div v-for="show in shows" :key="show.id" class="card-wrapper">
             <PosterCard :show="show"/>
         </div>
@@ -23,5 +23,7 @@ export default {
 </script>
 
 <style scoped>
+.poster-card-list { text-align: center; }
+
 .card-wrapper { display: inline-block; }
 </style>
