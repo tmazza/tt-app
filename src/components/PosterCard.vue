@@ -1,5 +1,5 @@
 <template>
-    <div class="card" @click="open">
+    <div class="card" :class="{ followed: followed }" @click="open">
         <img :src="posterUrl">
         <div class="content">
             {{ show.original_name }}
@@ -18,6 +18,10 @@ export default {
     computed: {
         posterUrl () {
             return this.$tmdb.posterUrl(this.show.poster_path, 3)
+        },
+
+        followed () {
+            return this.$store.getters['shows/progress'](this.show.id) !== undefined
         }
     },
 
@@ -45,10 +49,17 @@ export default {
 }
 
 .card .content {
+    margin-bottom: 6px;
     padding: 0 8px;
     overflow: hidden;
     text-align: center;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+.followed {
+    color: white;
+    background-color: #33C3F0;
+    border-color: #33C3F0;
 }
 </style>

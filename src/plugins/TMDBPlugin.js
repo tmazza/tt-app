@@ -21,6 +21,15 @@ export default {
                 'w780'
             ],
 
+            statuses: {
+                'Returning Series': 'returning',
+                'Planned': 'planned',
+                'In Production': 'in_production',
+                'Ended': 'ended',
+                'Canceled': 'canceled',
+                'Pilot': 'pilot'
+            },
+
             get (url, queryParams) {
                 queryParams = queryParams || {}
                 queryParams.api_key = this.apiKey
@@ -44,6 +53,10 @@ export default {
                     size = size || 0
                     return this.urls['poster'] + this.posterWidths[size] + path
                 }
+            },
+
+            status (show) {
+                return this.statuses[show.status]
             },
 
             seasons (show) {

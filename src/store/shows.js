@@ -11,6 +11,32 @@ export default {
     getters: {
         progress: (state) => (id) => {
             return state.progresses.find(progress => progress.show_id === id)
+        },
+
+        available: () => (progress) => {
+            if (progress.next_air_date === null) {
+                return false
+            }
+
+            var today = new Date()
+            var airDate = new Date(progress.next_air_date)
+            return airDate <= today
+        },
+
+        availableProgresses (state, getters) {
+            return state.progresses.filter(progress => getters.available(progress))
+        },
+
+        comingSoon (state, getters) {
+            return state.progresses.filter(progress => {
+                return !getters.available(progress) && progress.next_air_date !== null
+            })
+        },
+
+        unavailableProgresses (state, getters) {
+            return state.progresses.filter(progress => {
+                return !getters.available(progress) && progress.next_air_date === null
+            })
         }
     },
 

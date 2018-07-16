@@ -5,12 +5,14 @@
         </div>
 
         <div class="right-content">
-            <h3>{{ name }}</h3>
+            <h3>{{ this.show.original_name }}</h3>
 
-            <p>{{ overview }}</p>
+            <p>Status: {{ this.show.status }}</p>
+
+            <p>{{ this.show.overview }}</p>
 
             <div class="buttons">
-                <button v-if="!progress" class="button-primary" @click="createProgress">
+                <button v-if="!progress" class="button-primary" @click="follow">
                     Follow
                 </button>
                 <button v-if="progress" class="button" @click="deleteProgress">
@@ -43,16 +45,8 @@ export default {
     },
 
     computed: {
-        name () {
-            return this.show.original_name
-        },
-
         posterUrl () {
             return this.$tmdb.posterUrl(this.show.poster_path, 4)
-        },
-
-        overview () {
-            return this.show.overview
         },
 
         seasons () {
@@ -81,22 +75,48 @@ export default {
 
     methods: {
         getShowDetail () {
-            this.$tmdb.getShow(this.showId).then(response => { this.show = response.data })
+            this.$tmdb.getShow(this.showId).then(response => {
+                this.show = response.data
+
+                if (this.progress) {
+                    var payload = {
+                        id: this.showId,
+                        data: {}
+                    }
+
+                    if (this.progress.show_poster_path !== this.show.poster_path) {
+                        payload.data.show_poster_path = this.show.poster_path
+                    }
+
+                    if (this.progress.show_status !== this.$tmdb.status(this.show)) {
+                        payload.data.show_status = this.$tmdb.status(this.show)
+                    }
+
+                    if (Object.keys(payload.data)) {
+                        this.$store.dispatch('shows/updateProgress', payload)
+                    }
+                }
+            })
         },
 
-        createProgress () {
+        follow () {
             if (!this.$store.getters['auth/authenticated']) {
                 this.$router.push({ name: 'signup', query: { next: this.$route.path } })
             } else {
-                this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
-                    this.$store.dispatch('shows/createProgress', {
-                        show_id: this.showId,
-                        show_name: this.name,
-                        show_poster_path: this.show.poster_path,
-                        next_air_date: response.data.air_date
-                    })
-                })
+                this.createProgress()
             }
+        },
+
+        createProgress () {
+            this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
+                this.$store.dispatch('shows/createProgress', {
+                    show_id: this.showId,
+                    show_name: this.show.original_name,
+                    show_poster_path: this.show.poster_path,
+                    show_status: this.$tmdb.status(this.show),
+                    next_air_date: response.data.air_date
+                })
+            })
         },
 
         deleteProgress () {

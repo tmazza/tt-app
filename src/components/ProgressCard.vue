@@ -4,6 +4,8 @@
         <div class="card-right">
             <h5>{{ progress.show_name }}</h5>
 
+            <span>Status: {{ progress.show_status_text }}</span>
+
             <div class="episodes">
                 <div class="episodes-left">
                     <div v-if="progress.current_season && progress.current_episode">
@@ -74,7 +76,17 @@ export default {
     },
 
     methods: {
+        escapeEpisodeCheck () {
+            var hasNextAirDate = this.progress.next_air_date !== null
+            var endedOrCanceled = ['ended', 'canceled'].includes(this.progress.show_status)
+            return !hasNextAirDate && endedOrCanceled
+        },
+
         checkNextEpisode () {
+            if (this.escapeEpisodeCheck()) {
+                return
+            }
+
             var showId = this.progress.show_id
             var nextSeason = this.progress.next_season
             var nextEpisode = this.progress.next_episode
@@ -98,6 +110,10 @@ export default {
                             payload.data.show_poster_path = this.show.poster_path
                         }
 
+                        if (this.progress.show_status !== this.$tmdb.status(this.show)) {
+                            payload.data.show_status = this.$tmdb.status(this.show)
+                        }
+
                         this.$tmdb.getEpisode(showId, next.season, next.episode).then(response => {
                             if (response.data.air_date) {
                                 payload.data.next_air_date = response.data.air_date
@@ -106,7 +122,7 @@ export default {
                         })
                     }
                 })
-            } else if (!this.progress.next_air_date) {
+            } else if (this.progress.next_air_date === null) {
                 this.$tmdb.getEpisode(showId, nextSeason, nextEpisode).then(response => {
                     if (response.data.air_date) {
                         payload.data.next_air_date = response.data.air_date
@@ -136,6 +152,14 @@ export default {
                 payload.data.next_season = next.season
                 payload.data.next_episode = next.episode
 
+                if (this.progress.show_poster_path !== this.show.poster_path) {
+                    payload.data.show_poster_path = this.show.poster_path
+                }
+
+                if (this.progress.show_status !== this.$tmdb.status(this.show)) {
+                    payload.data.show_status = this.$tmdb.status(this.show)
+                }
+
                 if (next.season && next.episode) {
                     this.$tmdb.getEpisode(showId, next.season, next.episode).then(response => {
                         payload.data.next_air_date = response.data.air_date
@@ -149,7 +173,7 @@ export default {
 
         getShow () {
             return new Promise((resolve, reject) => {
-                if (this.show) {
+                if (this.show && this.show.id === this.progress.show_id) {
                     resolve()
                 } else {
                     this.$tmdb.getShow(this.progress.show_id)

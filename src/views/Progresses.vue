@@ -1,6 +1,17 @@
 <template>
     <div>
-        <div v-for="progress in progresses" :key="progress.id">
+        <h4>Available</h4>
+        <div v-for="progress in available" :key="progress.id">
+            <ProgressCard :progress="progress"/>
+        </div>
+
+        <h4>Coming Soon</h4>
+        <div v-for="progress in comingSoon" :key="progress.id">
+            <ProgressCard :progress="progress"/>
+        </div>
+
+        <h4>Unavailable</h4>
+        <div v-for="progress in unavailable" :key="progress.id">
             <ProgressCard :progress="progress"/>
         </div>
     </div>
@@ -15,9 +26,21 @@ export default {
     },
 
     computed: {
-        progresses () {
-            return this.$store.state.shows.progresses
+        available () {
+            return this.$store.getters['shows/availableProgresses']
+        },
+
+        comingSoon () {
+            return this.$store.getters['shows/comingSoon']
+        },
+
+        unavailable () {
+            return this.$store.getters['shows/unavailableProgresses']
         }
     }
 }
 </script>
+
+<style scoped>
+h4 { text-align: center; }
+</style>
