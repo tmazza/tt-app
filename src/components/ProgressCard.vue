@@ -62,7 +62,7 @@ export default {
         },
 
         available () {
-            if (!this.progress.next_air_date) {
+            if (this.progress.next_air_date === null) {
                 return false
             }
             var today = new Date()
@@ -72,60 +72,51 @@ export default {
     },
 
     mounted () {
-        this.checkNextEpisode()
+        if (!this.escapeEpisodeCheck()) {
+            this.checkNextEpisode()
+        }
     },
 
     methods: {
         escapeEpisodeCheck () {
+            // Escape if the show was updated within 30 minutes.
+            var now = new Date()
+            var lastUpdated = new Date(this.progress.updated)
+            if ((now - lastUpdated) / (1000 * 60) <= 30) {
+                return true
+            }
+
+            // Or when the show is ended/canceled and the next episode air date
+            // is missing.
             var hasNextAirDate = this.progress.next_air_date !== null
             var endedOrCanceled = ['ended', 'canceled'].includes(this.progress.show_status)
             return !hasNextAirDate && endedOrCanceled
         },
 
         checkNextEpisode () {
-            if (this.escapeEpisodeCheck()) {
-                return
-            }
-
             var showId = this.progress.show_id
             var nextSeason = this.progress.next_season
             var nextEpisode = this.progress.next_episode
-            var payload = {
-                id: this.progress.show_id,
-                data: {}
-            }
+            var payload = this.initPayload(false)
 
-            if (!nextSeason || !nextEpisode) {
+            if (!nextSeason || !nextEpisode) { // next episode is missing
                 this.getShow().then(() => {
-                    var seasons = this.show.seasons
-                    var currentSeason = this.progress.current_season
-                    var currentEpisode = this.progress.current_episode
-                    var next = this.$tmdb.nextEpisode(seasons, currentSeason, currentEpisode)
-
-                    if (next.season && next.episode) {
-                        payload.data.next_season = next.season
-                        payload.data.next_episode = next.episode
-
-                        if (this.progress.show_poster_path !== this.show.poster_path) {
-                            payload.data.show_poster_path = this.show.poster_path
-                        }
-
-                        if (this.progress.show_status !== this.$tmdb.status(this.show)) {
-                            payload.data.show_status = this.$tmdb.status(this.show)
-                        }
-
+                    var next = this.getNextEpisode(false)
+                    if (next.season && next.episode) { // next episode info is available from TMDb
                         this.$tmdb.getEpisode(showId, next.season, next.episode).then(response => {
                             if (response.data.air_date) {
-                                payload.data.next_air_date = response.data.air_date
+                                this.updatePayload(payload, next.season, next.episode, response.data.air_date)
+                            } else {
+                                this.updatePayload(payload, next.season, next.episode, false)
                             }
                             this.$store.dispatch('shows/updateProgress', payload)
                         })
                     }
                 })
-            } else if (this.progress.next_air_date === null) {
+            } else if (this.progress.next_air_date === null) { // only next episode air date is missing
                 this.$tmdb.getEpisode(showId, nextSeason, nextEpisode).then(response => {
                     if (response.data.air_date) {
-                        payload.data.next_air_date = response.data.air_date
+                        this.updatePayload(payload, false, false, response.data.air_date)
                         this.$store.dispatch('shows/updateProgress', payload)
                     }
                 })
@@ -133,25 +124,48 @@ export default {
         },
 
         next () {
-            var showId = this.progress.show_id
+            var payload = this.initPayload(true)
+            this.getShow().then(() => {
+                var next = this.getNextEpisode(true)
+                if (next.season && next.episode) {
+                    this.$tmdb.getEpisode(this.progress.show_id, next.season, next.episode).then(response => {
+                        this.updatePayload(payload, next.season, next.episode, response.data.air_date)
+                        this.$store.dispatch('shows/updateProgress', payload)
+                    })
+                } else {
+                    this.$store.dispatch('shows/updateProgress', payload)
+                }
+            })
+        },
+
+        initPayload (next) {
             var payload = {
                 id: this.progress.show_id,
-                data: {
-                    current_season: this.progress.next_season,
-                    current_episode: this.progress.next_episode,
-                    next_air_date: null
-                }
+                data: {}
+            }
+            if (next) {
+                payload.data.current_season = this.progress.next_season
+                payload.data.current_episode = this.progress.next_episode
+                payload.data.next_season = null
+                payload.data.next_episode = null
+                payload.data.next_air_date = null
+            }
+            return payload
+        },
+
+        updatePayload (payload, nextSeason, nextEpisode, nextAirDate) {
+            if (nextSeason && nextEpisode) {
+                payload.data.next_season = nextSeason
+                payload.data.next_episode = nextEpisode
             }
 
-            this.getShow().then(() => {
-                var seasons = this.show.seasons
-                var currentSeason = payload.data.current_season
-                var currentEpisode = payload.data.current_episode
-                var next = this.$tmdb.nextEpisode(seasons, currentSeason, currentEpisode)
+            if (nextAirDate) {
+                payload.data.next_air_date = nextAirDate
+            }
 
-                payload.data.next_season = next.season
-                payload.data.next_episode = next.episode
-
+            // This function may be called without calling `getShow`, so `this.show`
+            // can be undefined.
+            if (this.show) {
                 if (this.progress.show_poster_path !== this.show.poster_path) {
                     payload.data.show_poster_path = this.show.poster_path
                 }
@@ -159,16 +173,14 @@ export default {
                 if (this.progress.show_status !== this.$tmdb.status(this.show)) {
                     payload.data.show_status = this.$tmdb.status(this.show)
                 }
+            }
+        },
 
-                if (next.season && next.episode) {
-                    this.$tmdb.getEpisode(showId, next.season, next.episode).then(response => {
-                        payload.data.next_air_date = response.data.air_date
-                        this.$store.dispatch('shows/updateProgress', payload)
-                    })
-                } else {
-                    this.$store.dispatch('shows/updateProgress', payload)
-                }
-            })
+        getNextEpisode (next) {
+            var seasons = this.show.seasons
+            var currentSeason = next ? this.progress.next_season : this.progress.current_season
+            var currentEpisode = next ? this.progress.next_episode : this.progress.current_episode
+            return this.$tmdb.nextEpisode(seasons, currentSeason, currentEpisode)
         },
 
         getShow () {
