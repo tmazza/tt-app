@@ -8,6 +8,7 @@ import Progresses from '@/views/Progresses.vue'
 import ShowDetail from '@/views/ShowDetail.vue'
 import Shows from '@/views/Shows.vue'
 import ShowsPopular from '@/views/ShowsPopular.vue'
+import ShowsSearch from '@/views/ShowsSearch.vue'
 
 import store from '@/store'
 
@@ -59,6 +60,11 @@ const router = new Router({
                     path: 'popular',
                     name: 'showsPopular',
                     component: ShowsPopular
+                },
+                {
+                    path: 'search',
+                    name: 'showsSearch',
+                    component: ShowsSearch
                 }
             ]
         }

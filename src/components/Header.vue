@@ -4,6 +4,7 @@
             <div>
                 <HeaderItem to="progresses" v-if="authenticated">My Progresses</HeaderItem>
                 <HeaderItem to="showsPopular">Popular Shows</HeaderItem>
+                <HeaderItem to="showsSearch">Search</HeaderItem>
             </div>
 
             <div>

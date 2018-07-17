@@ -8,6 +8,7 @@ export default {
             urls: {
                 detail: 'https://api.themoviedb.org/3/tv',
                 popular: 'https://api.themoviedb.org/3/tv/popular',
+                search: 'https://api.themoviedb.org/3/search/tv',
                 poster: 'https://image.tmdb.org/t/p/'
             },
 
@@ -36,22 +37,26 @@ export default {
                 return axios.get(url, { params: queryParams })
             },
 
+            search (name) {
+                return this.get(this.urls.search, { query: name })
+            },
+
             getPopulars (page) {
-                return this.get(this.urls['popular'], { page: page })
+                return this.get(this.urls.popular, { page: page })
             },
 
             getShow (id) {
-                return this.get(this.urls['detail'] + '/' + id)
+                return this.get(this.urls.detail + '/' + id)
             },
 
             getEpisode (showId, season, episode) {
-                return this.get(this.urls['detail'] + '/' + showId + '/season/' + season + '/episode/' + episode)
+                return this.get(this.urls.detail + '/' + showId + '/season/' + season + '/episode/' + episode)
             },
 
             posterUrl (path, size) {
                 if (path) {
                     size = size || 0
-                    return this.urls['poster'] + this.posterWidths[size] + path
+                    return this.urls.poster + this.posterWidths[size] + path
                 }
             },
 

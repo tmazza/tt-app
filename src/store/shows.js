@@ -2,10 +2,12 @@ export default {
     namespaced: true,
 
     state: {
+        progresses: [],
+
         populars: [],
         popularsNextPage: 1,
 
-        progresses: []
+        searchResult: []
     },
 
     getters: {
@@ -46,11 +48,19 @@ export default {
             state.populars = state.populars.concat(payload.results)
         },
 
+        setSearchResult (state, payload) {
+            state.searchResult = payload.results
+        },
+
+        clearSearchResult (state) {
+            state.searchResult = []
+        },
+
         setProgresses (state, payload) {
             state.progresses = payload
         },
 
-        clear (state) {
+        clearProgress (state) {
             state.progresses = []
         }
     },
@@ -62,6 +72,15 @@ export default {
         getPopulars ({ commit, state }) {
             this._vm.$tmdb.getPopulars(state.popularsNextPage)
                 .then(response => commit('addPopulars', response.data))
+        },
+
+        search ({ commit }, payload) {
+            this._vm.$tmdb.search(payload.name)
+                .then(response => commit('setSearchResult', response.data))
+        },
+
+        clearSearchResult ({ commit }) {
+            commit('clearSearchResult')
         },
 
         /**
@@ -96,8 +115,13 @@ export default {
                 .then(() => dispatch('getProgresses'))
         },
 
-        clear ({ commit }) {
-            commit('clear')
+        clearProgress ({ commit }) {
+            commit('clearProgress')
+        },
+
+        clear ({ dispatch }) {
+            dispatch('clearProgress')
+            dispatch('clearSearchResult')
         }
     }
 }
