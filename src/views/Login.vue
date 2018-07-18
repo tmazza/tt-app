@@ -15,15 +15,19 @@
 
             <input class="button-primary" type="submit" value="Login">
         </form>
+
+        <Loader v-if="loading" :fullscreen="true"/>
     </div>
 </template>
 
 <script>
 import FormErrors from '@/components/FormErrors'
+import Loader from '@/components/Loader'
 
 export default {
     components: {
-        FormErrors
+        FormErrors,
+        Loader
     },
 
     data () {
@@ -31,17 +35,21 @@ export default {
             form: {
                 data: {},
                 errors: {}
-            }
+            },
+            loading: false
         }
     },
 
     methods: {
         login () {
+            this.loading = true
+
             this.$form.submit('auth/login', this.form)
                 .then(() => {
                     this.$store.dispatch('shows/getProgresses')
                     this.$router.push({ name: 'progresses' })
                 })
+                .catch(() => { this.loading = false })
         }
     }
 }

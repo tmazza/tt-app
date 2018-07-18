@@ -22,15 +22,19 @@
 
             <input class="button-primary" type="submit" value="Signup">
         </form>
+
+        <Loader v-if="loading" :fullscreen="true"/>
     </div>
 </template>
 
 <script>
 import FormErrors from '@/components/FormErrors'
+import Loader from '@/components/Loader'
 
 export default {
     components: {
-        FormErrors
+        FormErrors,
+        Loader
     },
 
     data () {
@@ -38,17 +42,21 @@ export default {
             form: {
                 data: {},
                 errors: {}
-            }
+            },
+            loading: false
         }
     },
 
     methods: {
         signup () {
+            this.loading = true
+
             this.$form.submit('auth/signup', this.form)
                 .then(() => {
                     var to = this.$route.query.next || { name: 'showsPopular' }
                     this.$router.push(to)
                 })
+                .catch(() => { this.loading = false })
         }
     }
 }

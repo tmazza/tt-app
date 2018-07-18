@@ -41,15 +41,19 @@
                 </div>
             </div>
 
-            <div v-if="loading" class="loader">
-                <img src="@/assets/img/loader.png">
-            </div>
+            <Loader v-if="loading" class="loader"/>
         </div>
     </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
+
 export default {
+    components: {
+        Loader
+    },
+
     props: {
         progress: {
             type: Object
@@ -241,8 +245,6 @@ export default {
 </script>
 
 <style scoped>
-@keyframes spin { 100% { transform:rotate(360deg); } }
-
 .card {
     display: flex;
     margin: 0 auto 20px;
@@ -290,16 +292,5 @@ export default {
     justify-content: flex-end;
 }
 
-.card .card-right .loader {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-}
-
-.card .card-right .loader img {
-    width: 90px;
-    height: 90px;
-    animation: spin 3s linear infinite;
-}
+.card .card-right .loader { flex-grow: 1; }
 </style>

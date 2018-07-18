@@ -11,37 +11,36 @@
 
             <p>{{ this.show.overview }}</p>
 
-            <div class="buttons">
-                <button v-if="!progress"
-                        class="button-primary"
-                        :class="{ disabled: loading }"
-                        @click="follow">
+            <div v-if="!loading" class="buttons">
+                <button v-if="!progress" class="button-primary" @click="follow">
                     Follow
                 </button>
 
-                <button v-if="progress"
-                        class="button"
-                        :class="{ disabled: loading }"
-                        @click="unfollow">
+                <button v-if="progress" class="button" @click="unfollow">
                     Unfollow
                 </button>
             </div>
 
-            <EpisodeSelector :show-id="showId"
+            <EpisodeSelector v-if="!loading"
+                             :show-id="showId"
                              :seasons="seasons"
                              :current-season="currentSeason"
                              :current-episode="currentEpisode"
                              :disabled="progress === undefined"/>
+
+            <Loader v-if="loading"/>
         </div>
     </div>
 </template>
 
 <script>
 import EpisodeSelector from '@/components/EpisodeSelector'
+import Loader from '@/components/Loader'
 
 export default {
     components: {
-        EpisodeSelector
+        EpisodeSelector,
+        Loader
     },
 
     data () {
@@ -108,19 +107,15 @@ export default {
         },
 
         follow () {
-            if (!this.loading) {
-                if (!this.$store.getters['auth/authenticated']) {
-                    this.$router.push({ name: 'signup', query: { next: this.$route.path } })
-                } else {
-                    this.createProgress()
-                }
+            if (!this.$store.getters['auth/authenticated']) {
+                this.$router.push({ name: 'signup', query: { next: this.$route.path } })
+            } else {
+                this.createProgress()
             }
         },
 
         unfollow () {
-            if (!this.loading) {
-                this.deleteProgress()
-            }
+            this.deleteProgress()
         },
 
         createProgress () {
@@ -164,8 +159,6 @@ export default {
 #show-detail-container .right-content { padding-left: 32px; }
 
 #show-detail-container .right-content .buttons { margin-bottom: 25px; }
-
-#show-detail-container .right-content .buttons .disabled { cursor: not-allowed; }
 
 #poster-container { max-width: 342px; }
 
