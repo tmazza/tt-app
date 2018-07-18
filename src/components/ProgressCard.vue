@@ -4,9 +4,11 @@
         <div class="card-right">
             <h5>{{ progress.show_name }}</h5>
 
-            <span>Status: {{ progress.show_status_text }}</span>
+            <span v-if="!loading">
+                Status: {{ progress.show_status_text }}
+            </span>
 
-            <div class="episodes">
+            <div v-if="!loading" class="episodes">
                 <div class="episodes-left">
                     <div v-if="progress.current_season && progress.current_episode">
                         Current:
@@ -31,12 +33,16 @@
                 </div>
             </div>
 
-            <div class="card-buttons">
+            <div v-if="!loading" class="card-buttons">
                 <a class="card-button" @click="unfollow">unfollow</a>
                 <div class="card-buttons-right">
                     <a class="card-button" @click="open">details</a>
                     <a v-if="available" class="card-button" @click="next">next</a>
                 </div>
+            </div>
+
+            <div v-if="loading" class="loader">
+                <img src="@/assets/img/loader.png">
             </div>
         </div>
     </div>
@@ -52,6 +58,7 @@ export default {
 
     data () {
         return {
+            loading: true,
             show: undefined
         }
     },
@@ -74,6 +81,8 @@ export default {
     mounted () {
         if (!this.escapeEpisodeCheck()) {
             this.checkNextEpisode()
+        } else {
+            this.hideLoader()
         }
     },
 
@@ -109,31 +118,39 @@ export default {
                             } else {
                                 this.updatePayload(payload, next.season, next.episode, false)
                             }
-                            this.$store.dispatch('shows/updateProgress', payload)
+                            this.sendPayload(payload)
                         })
+                    } else {
+                        this.hideLoader()
                     }
                 })
             } else if (this.progress.next_air_date === null) { // only next episode air date is missing
                 this.$tmdb.getEpisode(showId, nextSeason, nextEpisode).then(response => {
                     if (response.data.air_date) {
                         this.updatePayload(payload, false, false, response.data.air_date)
-                        this.$store.dispatch('shows/updateProgress', payload)
+                        this.sendPayload(payload)
+                    } else {
+                        this.hideLoader()
                     }
                 })
+            } else {
+                this.hideLoader()
             }
         },
 
         next () {
+            this.showLoader()
+
             var payload = this.initPayload(true)
             this.getShow().then(() => {
                 var next = this.getNextEpisode(true)
                 if (next.season && next.episode) {
                     this.$tmdb.getEpisode(this.progress.show_id, next.season, next.episode).then(response => {
                         this.updatePayload(payload, next.season, next.episode, response.data.air_date)
-                        this.$store.dispatch('shows/updateProgress', payload)
+                        this.sendPayload(payload)
                     })
                 } else {
-                    this.$store.dispatch('shows/updateProgress', payload)
+                    this.sendPayload(payload)
                 }
             })
         },
@@ -176,6 +193,10 @@ export default {
             }
         },
 
+        sendPayload (payload) {
+            this.$store.dispatch('shows/updateProgress', payload).then(this.hideLoader)
+        },
+
         getNextEpisode (next) {
             var seasons = this.show.seasons
             var currentSeason = next ? this.progress.next_season : this.progress.current_season
@@ -185,7 +206,7 @@ export default {
 
         getShow () {
             return new Promise((resolve, reject) => {
-                if (this.show && this.show.id === this.progress.show_id) {
+                if (this.show) {
                     resolve()
                 } else {
                     this.$tmdb.getShow(this.progress.show_id)
@@ -199,11 +220,20 @@ export default {
             })
         },
 
+        showLoader () {
+            this.loading = true
+        },
+
+        hideLoader () {
+            this.loading = false
+        },
+
         open () {
             this.$router.push({ name: 'showDetail', params: { id: this.progress.show_id } })
         },
 
         unfollow () {
+            this.showLoader()
             this.$store.dispatch('shows/deleteProgress', { id: this.progress.show_id })
         }
     }
@@ -211,6 +241,8 @@ export default {
 </script>
 
 <style scoped>
+@keyframes spin { 100% { transform:rotate(360deg); } }
+
 .card {
     display: flex;
     margin: 0 auto 20px;
@@ -256,5 +288,18 @@ export default {
     display: flex;
     flex-grow: 1;
     justify-content: flex-end;
+}
+
+.card .card-right .loader {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.card .card-right .loader img {
+    width: 90px;
+    height: 90px;
+    animation: spin 3s linear infinite;
 }
 </style>

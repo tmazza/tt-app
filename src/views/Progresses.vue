@@ -4,7 +4,7 @@
         <p v-if="available.length === 0">
             No available episode left to watch.
         </p>
-        <div v-for="progress in available" :key="progress.id">
+        <div v-for="progress in available" :key="progress.show_id">
             <ProgressCard :progress="progress"/>
         </div>
 
@@ -12,7 +12,7 @@
         <p v-if="comingSoon.length === 0">
             No episode coming soon.
         </p>
-        <div v-for="progress in comingSoon" :key="progress.id">
+        <div v-for="progress in comingSoon" :key="progress.show_id">
             <ProgressCard :progress="progress"/>
         </div>
 
@@ -20,7 +20,7 @@
         <p v-if="unavailable.length === 0">
             No unavailable episode.
         </p>
-        <div v-for="progress in unavailable" :key="progress.id">
+        <div v-for="progress in unavailable" :key="progress.show_id">
             <ProgressCard :progress="progress"/>
         </div>
     </div>

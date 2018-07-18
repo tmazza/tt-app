@@ -12,10 +12,17 @@
             <p>{{ this.show.overview }}</p>
 
             <div class="buttons">
-                <button v-if="!progress" class="button-primary" @click="follow">
+                <button v-if="!progress"
+                        class="button-primary"
+                        :class="{ disabled: loading }"
+                        @click="follow">
                     Follow
                 </button>
-                <button v-if="progress" class="button" @click="deleteProgress">
+
+                <button v-if="progress"
+                        class="button"
+                        :class="{ disabled: loading }"
+                        @click="unfollow">
                     Unfollow
                 </button>
             </div>
@@ -39,6 +46,7 @@ export default {
 
     data () {
         return {
+            loading: false,
             showId: Number(this.$route.params.id),
             show: {}
         }
@@ -100,27 +108,47 @@ export default {
         },
 
         follow () {
-            if (!this.$store.getters['auth/authenticated']) {
-                this.$router.push({ name: 'signup', query: { next: this.$route.path } })
-            } else {
-                this.createProgress()
+            if (!this.loading) {
+                if (!this.$store.getters['auth/authenticated']) {
+                    this.$router.push({ name: 'signup', query: { next: this.$route.path } })
+                } else {
+                    this.createProgress()
+                }
+            }
+        },
+
+        unfollow () {
+            if (!this.loading) {
+                this.deleteProgress()
             }
         },
 
         createProgress () {
+            this.startLoading()
+
             this.$tmdb.getEpisode(this.showId, 1, 1).then(response => {
-                this.$store.dispatch('shows/createProgress', {
+                var payload = {
                     show_id: this.showId,
                     show_name: this.show.original_name,
                     show_poster_path: this.show.poster_path,
                     show_status: this.$tmdb.status(this.show),
                     next_air_date: response.data.air_date
-                })
+                }
+                this.$store.dispatch('shows/createProgress', payload).then(this.finishLoading)
             })
         },
 
         deleteProgress () {
-            this.$store.dispatch('shows/deleteProgress', { id: this.showId })
+            this.startLoading()
+            this.$store.dispatch('shows/deleteProgress', { id: this.showId }).then(this.finishLoading)
+        },
+
+        startLoading () {
+            this.loading = true
+        },
+
+        finishLoading () {
+            this.loading = false
         }
     }
 }
@@ -136,6 +164,8 @@ export default {
 #show-detail-container .right-content { padding-left: 32px; }
 
 #show-detail-container .right-content .buttons { margin-bottom: 25px; }
+
+#show-detail-container .right-content .buttons .disabled { cursor: not-allowed; }
 
 #poster-container { max-width: 342px; }
 

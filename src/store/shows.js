@@ -87,7 +87,7 @@ export default {
         * Get all progresses from TT.
         */
         getProgresses ({ commit }) {
-            this._vm.$api.get('tmdb/progresses/')
+            return this._vm.$api.get('tmdb/progresses/')
                 .then(response => commit('setProgresses', response.data))
         },
 
@@ -95,7 +95,7 @@ export default {
         * Create a new progress to TT.
         */
         createProgress ({ dispatch }, payload) {
-            this._vm.$api.post('tmdb/progresses/', payload)
+            return this._vm.$api.post('tmdb/progresses/', payload)
                 .then(() => dispatch('getProgresses'))
         },
 
@@ -103,7 +103,7 @@ export default {
         * Update a progress by ID from TT.
         */
         updateProgress ({ dispatch }, payload) {
-            this._vm.$api.patch('tmdb/progresses/' + payload.id + '/', payload.data)
+            return this._vm.$api.patch('tmdb/progresses/' + payload.id + '/', payload.data)
                 .then(() => dispatch('getProgresses'))
         },
 
@@ -111,7 +111,7 @@ export default {
         * Delete a progress by ID from TT.
         */
         deleteProgress ({ dispatch }, payload) {
-            this._vm.$api.delete('tmdb/progresses/' + payload.id + '/')
+            return this._vm.$api.delete('tmdb/progresses/' + payload.id + '/')
                 .then(() => dispatch('getProgresses'))
         },
 

@@ -10,7 +10,7 @@
                       class="selector"
                       :key="episode.id"
                       :class="{
-                          disabled: disabled,
+                          disabled: disabled || loading,
                           selected: selected(season.season_number, episode)
                       }"
                       @click="select(season.season_number, episode)">
@@ -45,6 +45,12 @@ export default {
         }
     },
 
+    data () {
+        return {
+            loading: false
+        }
+    },
+
     methods: {
         selected (season, episode) {
             return (season === this.currentSeason && episode <= this.currentEpisode) ||
@@ -52,9 +58,11 @@ export default {
         },
 
         select (season, episode) {
-            if (this.disabled) {
+            if (this.disabled || this.loading) {
                 return
             }
+
+            this.startLoading()
 
             var payload = {
                 id: this.showId,
@@ -74,6 +82,7 @@ export default {
                     var today = new Date()
                     var airDate = new Date(response.data.air_date)
                     if (airDate > today) {
+                        this.finishLoading()
                         return
                     }
 
@@ -95,11 +104,23 @@ export default {
 
                 this.$tmdb.getEpisode(this.showId, season, episode).then(response => {
                     payload.data.next_air_date = response.data.air_date
-                    this.$store.dispatch('shows/updateProgress', payload)
+                    this.sendPayload(payload)
                 })
             } else {
-                this.$store.dispatch('shows/updateProgress', payload)
+                this.sendPayload(payload)
             }
+        },
+
+        sendPayload (payload) {
+            this.$store.dispatch('shows/updateProgress', payload).then(this.finishLoading)
+        },
+
+        startLoading () {
+            this.loading = true
+        },
+
+        finishLoading () {
+            this.loading = false
         }
     }
 }
