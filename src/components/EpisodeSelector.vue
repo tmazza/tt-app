@@ -18,11 +18,21 @@
                 </span>
             </div>
         </div>
+
+        <Modal v-if="showModal" v-on:close="closeModal">
+            {{ modalText }}
+        </Modal>
     </div>
 </template>
 
 <script>
+import Modal from '@/components/Modal'
+
 export default {
+    components: {
+        Modal
+    },
+
     props: {
         showId: {
             type: Number
@@ -47,7 +57,9 @@ export default {
 
     data () {
         return {
-            loading: false
+            loading: false,
+            showModal: false,
+            modalText: ''
         }
     },
 
@@ -80,9 +92,10 @@ export default {
             } else {
                 this.$tmdb.getEpisode(this.showId, season, episode).then(response => {
                     var today = new Date()
-                    var airDate = new Date(response.data.air_date)
-                    if (airDate > today) {
+                    var airDate = response.data.air_date ? new Date(response.data.air_date) : null
+                    if (airDate === null || airDate > today) {
                         this.finishLoading()
+                        this.openModal(airDate)
                         return
                     }
 
@@ -121,6 +134,32 @@ export default {
 
         finishLoading () {
             this.loading = false
+        },
+
+        openModal (date) {
+            if (date !== null) {
+                this.modalText = 'This episode will be available at ' + this.formatDate(date) + '.'
+            } else {
+                this.modalText = 'This episode is not available, yet.'
+            }
+            this.showModal = true
+        },
+
+        closeModal () {
+            this.showModal = false
+            this.modalText = ''
+        },
+
+        formatDate (date) {
+            var year = date.getFullYear()
+
+            var month = date.getMonth() + 1 + ''
+            month = month.length === 2 ? month : ('0' + month)
+
+            var day = date.getDate() + ''
+            day = day.length === 2 ? day : ('0' + day)
+
+            return year + '/' + month + '/' + day
         }
     }
 }

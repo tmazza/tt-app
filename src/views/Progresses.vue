@@ -53,5 +53,9 @@ export default {
 <style scoped>
 h4, p { text-align: center; }
 
+h4 { margin-top: 44px; }
+
+h4:first-child { margin-top: 0; }
+
 p { color: #1EAEDB; }
 </style>
