@@ -35,7 +35,7 @@ export default {
             },
 
             getBaseUrl () {
-                return process.env.NODE_ENV === 'production' ? '' : 'http://localhost:8000/'
+                return process.env.VUE_APP_API_URL
             },
 
             getAuthHeader () {
