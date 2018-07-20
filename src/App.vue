@@ -24,6 +24,7 @@ export default {
     methods: {
         getProgresses () {
             this.$store.dispatch('shows/getProgresses')
+                .then(() => this.$store.dispatch('shows/finishLoadingProgresses'))
         }
     }
 }

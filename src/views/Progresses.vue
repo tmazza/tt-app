@@ -23,18 +23,26 @@
         <div v-for="progress in unavailable" :key="progress.show_id">
             <ProgressCard :progress="progress"/>
         </div>
+
+        <Loader v-if="loadingProgresses" class="loader" :fullscreen="true"/>
     </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
 import ProgressCard from '@/components/ProgressCard'
 
 export default {
     components: {
+        Loader,
         ProgressCard
     },
 
     computed: {
+        loadingProgresses () {
+            return this.$store.state.shows.loadingProgresses
+        },
+
         available () {
             return this.$store.getters['shows/availableProgresses']
         },
@@ -58,4 +66,6 @@ h4 { margin-top: 44px; }
 h4:first-child { margin-top: 0; }
 
 p { color: #1EAEDB; }
+
+.loader { top: 50px; }
 </style>

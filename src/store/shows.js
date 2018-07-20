@@ -3,6 +3,7 @@ export default {
 
     state: {
         progresses: [],
+        loadingProgresses: true,
 
         populars: [],
         popularsNextPage: 1,
@@ -43,6 +44,10 @@ export default {
     },
 
     mutations: {
+        finishLoadingProgresses (state) {
+            state.loadingProgresses = false
+        },
+
         addPopulars (state, payload) {
             state.popularsNextPage += 1
             state.populars = state.populars.concat(payload.results)
@@ -66,6 +71,10 @@ export default {
     },
 
     actions: {
+        finishLoadingProgresses ({ commit }) {
+            commit('finishLoadingProgresses')
+        },
+
         /**
         * Get popular shows by page from TMDb.
         */
