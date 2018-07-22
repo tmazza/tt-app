@@ -41,6 +41,7 @@ export default {
 .header {
     border-bottom: 1px solid #c7c7c7;
     background-color: white;
+    z-index: 8000;
 }
 
 .header .tt-container {

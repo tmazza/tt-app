@@ -24,7 +24,7 @@
             <ProgressCard :progress="progress"/>
         </div>
 
-        <Loader v-if="loadingProgresses" class="loader" :fullscreen="true"/>
+        <Loader v-if="!progressesFirstLoadFinished" :fullscreen="true"/>
     </div>
 </template>
 
@@ -39,8 +39,8 @@ export default {
     },
 
     computed: {
-        loadingProgresses () {
-            return this.$store.state.shows.loadingProgresses
+        progressesFirstLoadFinished () {
+            return this.$store.state.shows.progressesFirstLoadFinished
         },
 
         available () {
@@ -66,6 +66,4 @@ h4 { margin-top: 44px; }
 h4:first-child { margin-top: 0; }
 
 p { color: #1EAEDB; }
-
-.loader { top: 50px; }
 </style>

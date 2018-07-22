@@ -3,7 +3,7 @@ export default {
 
     state: {
         progresses: [],
-        loadingProgresses: true,
+        progressesFirstLoadFinished: false,
 
         populars: [],
         popularsNextPage: 1,
@@ -44,8 +44,10 @@ export default {
     },
 
     mutations: {
-        finishLoadingProgresses (state) {
-            state.loadingProgresses = false
+        finishProgressesFirstLoad (state) {
+            if (!state.progressesFirstLoadFinished) {
+                state.progressesFirstLoadFinished = true
+            }
         },
 
         addPopulars (state, payload) {
@@ -67,12 +69,13 @@ export default {
 
         clearProgress (state) {
             state.progresses = []
+            state.progressesFirstLoadFinished = false
         }
     },
 
     actions: {
-        finishLoadingProgresses ({ commit }) {
-            commit('finishLoadingProgresses')
+        finishProgressesFirstLoad ({ commit }) {
+            commit('finishProgressesFirstLoad')
         },
 
         /**
@@ -84,7 +87,7 @@ export default {
         },
 
         search ({ commit }, payload) {
-            this._vm.$tmdb.search(payload.name)
+            return this._vm.$tmdb.search(payload.name)
                 .then(response => commit('setSearchResult', response.data))
         },
 
@@ -95,9 +98,12 @@ export default {
         /**
         * Get all progresses from TT.
         */
-        getProgresses ({ commit }) {
+        getProgresses ({ commit, dispatch }) {
             return this._vm.$api.get('tmdb/progresses/')
-                .then(response => commit('setProgresses', response.data))
+                .then(response => {
+                    commit('setProgresses', response.data)
+                    dispatch('finishProgressesFirstLoad')
+                })
         },
 
         /**

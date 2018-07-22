@@ -99,7 +99,7 @@ export default {
                         payload.data.show_status = this.$tmdb.status(this.show)
                     }
 
-                    if (Object.keys(payload.data)) {
+                    if (Object.keys(payload.data).length) {
                         this.$store.dispatch('shows/updateProgress', payload)
                     }
                 }

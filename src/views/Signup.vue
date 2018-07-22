@@ -55,6 +55,7 @@ export default {
                 .then(() => {
                     var to = this.$route.query.next || { name: 'showsPopular' }
                     this.$router.push(to)
+                    this.$store.dispatch('shows/finishProgressesFirstLoad')
                 })
                 .catch(() => { this.loading = false })
         }

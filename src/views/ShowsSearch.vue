@@ -5,19 +5,23 @@
             <input class="button-primary" type="submit" value="Search">
         </form>
         <PosterCardList :shows="shows"/>
+        <Loader v-if="searching" :fullscreen="true"/>
     </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader'
 import PosterCardList from '@/components/PosterCardList'
 
 export default {
     components: {
+        Loader,
         PosterCardList
     },
 
     data () {
         return {
+            searching: false,
             name: ''
         }
     },
@@ -39,7 +43,9 @@ export default {
 
         search () {
             if (this.name) {
+                this.searching = true
                 this.$store.dispatch('shows/search', { name: this.name })
+                    .then(() => { this.searching = false })
             } else {
                 this.$store.dispatch('shows/clearSearchResult')
             }
